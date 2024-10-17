@@ -6,11 +6,9 @@ authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
-fastapi = "^0.115.0"
-uvicorn = "^0.31.0"
+python = "^3.10"
+spotipy = "^2.24.0"
 aiogram = "^3.13.1"
-weaviate-client = "^4.8.1"
 
 
 [build-system]

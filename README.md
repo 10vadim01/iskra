@@ -1,7 +1,7 @@
 # iskra
 This repository contains the source code for the all-in-one smart device.
 
-![Iskra Image](docs/images/iskra.jpg) 
+![iskra](docs/images/iskra.jpg) 
 
 ## Documentation
 
