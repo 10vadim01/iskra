@@ -1,45 +1,29 @@
 Preffered OS for <span style="color:orange">iskra</span> so far is `Ubuntu 22.04 LTS`.
 
 Installed packages:
-- `zsh`
 - `tmux`
 - `git`
-- `vim`
 - `curl`
 - `net-tools`
 - `openssh-server`
 
 Install with apt:
 ```sh
-sudo apt install zsh tmux git vim curl net-tools openssh-server
-```
-For easy shell navigation oh-my-zsh is installed:
-```sh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-Add plugins to zsh:
-```sh
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-```
-Add plugins to vim:
-```sh
-git clone https://github.com/preservim/nerdtree.git ~/.vim/pack/vendor/start/nerdtree
-git clone https://github.com/vim-airline/vim-airline ~/.vim/pack/vendor/start/vim-airline
+sudo apt install tmux git curl net-tools openssh-server
 ```
 Install conda for python environment management:
 ```sh
 wget https://repo.anaconda.com/archive/Anaconda3-2024.06-1-Linux-aarch64.sh
 bash Anaconda3-2024.06-1-Linux-aarch64.sh
 ``` 
-
-Install poetry for python package management:
+Create python environment for testing iskra :
 ```sh
-curl -sSL https://install.python-poetry.org | python3 -
+conda create -n iskra python=3.10
+conda activate iskra
 ```
-If run into http error, try:
+Clone iskra repository:
 ```sh
-pip install urllib3<2.0
+git clone https://github.com/10vadim01/iskra.git
 ```
 
 ## Add-ons 

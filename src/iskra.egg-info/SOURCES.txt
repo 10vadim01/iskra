@@ -1,0 +1,15 @@
+README.md
+setup.py
+src/iskra/__init__.py
+src/iskra.egg-info/PKG-INFO
+src/iskra.egg-info/SOURCES.txt
+src/iskra.egg-info/dependency_links.txt
+src/iskra.egg-info/top_level.txt
+src/iskra/fast_api/__init__.py
+src/iskra/fast_api/main.py
+src/iskra/modules/__init__.py
+src/iskra/modules/spotify.py
+src/iskra/telegram/__init__.py
+src/iskra/telegram/main.py
+src/server/__init__.py
+src/server/main.py
