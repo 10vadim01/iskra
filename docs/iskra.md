@@ -25,6 +25,57 @@ Clone iskra repository:
 ```sh
 git clone https://github.com/10vadim01/iskra.git
 ```
+Install python dependencies (Not tested):
+```sh
+pip install -r iskra/requirements.txt
+```
+Install package in editable mode:
+```sh
+pip install -e iskra
+```
+Run some module:
+```sh
+python -m iskra.telegram.main
+```
+## Connect Speakers
+Activate bluetoothctl:
+```sh
+sudo bluetoothctl
+```
+Set power on and make iskra discoverable:
+```sh
+power on
+discoverable on
+```
+Pair and connect to iskra:
+```sh
+pair XX:XX:XX:XX:XX:XX
+connect XX:XX:XX:XX:XX:XX
+```
+Quit bluetoothctl:
+```sh
+quit
+```
+
+## Connect Microphone
+Install alsa-utils:
+```sh
+sudo apt install alsa-utils
+```
+List available microphones:
+```sh
+arecord -l
+```
+Test recording:
+```sh
+arecord -d 5 test.wav
+```
+Play recording:
+```sh
+aplay test.wav
+```
+
+## Setup audio stream to server
 
 ## Add-ons 
 
@@ -51,26 +102,6 @@ Run spotifyd:
 ./target/release/spotifyd --no-daemon
 ```
 Find iskra in Spotify client on another device and connect to it.
-
-### Connect Speakers
-Activate bluetoothctl:
-```sh
-sudo bluetoothctl
-```
-Set power on and make iskra discoverable:
-```sh
-power on
-discoverable on
-```
-Pair and connect to iskra:
-```sh
-pair XX:XX:XX:XX:XX:XX
-connect XX:XX:XX:XX:XX:XX
-```
-Quit bluetoothctl:
-```sh
-quit
-```
 
 ### ExpressVPN 
 (https://gist.github.com/martinbutt/a514621664dc17fcbd20d78f647bd14b)
