@@ -4,3 +4,4 @@ aiogram
 spotipy
 vllm
 soundfile
+pyaudio  
