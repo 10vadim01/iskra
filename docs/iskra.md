@@ -75,8 +75,26 @@ Play recording:
 aplay test.wav
 ```
 
-## Setup audio stream to server
+## Setup audio stream to server with whiper.cpp
 
+Clone repository:
+```sh
+git clone https://github.com/ggerganov/whisper.cpp.git
+```
+Download model:
+```sh
+cd whisper.cpp
+sh ./models/download-ggml-model.sh small.en
+```
+Build:
+```sh
+make main
+make stream
+```
+Run stream:
+```sh
+./stream -m models/ggml-small.en.bin --capture 1
+```
 ## Add-ons 
 
 ### Spotify Player
