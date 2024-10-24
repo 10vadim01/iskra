@@ -51,7 +51,7 @@ llm = LLM(model=llm_model_id)
 # FastAPI app
 app = FastAPI()
 
-UPLOAD_DIR = "/home/vapa/projects/iskra/received_audio"
+UPLOAD_DIR = "/home/vapa/projects/iskra/data/recordings"
 
 @app.post("/receive_audio")
 async def receive_audio(audio: UploadFile = File(...)):
@@ -64,13 +64,15 @@ async def receive_audio(audio: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         buffer.write(await audio.read())
         
-    sample = "/home/vapa/projects/iskra/received_audio/test.wav"
+    sample = "/home/vapa/projects/iskra/data/recordings/test.wav"
     result = pipe(sample)
     
     sampling_params = SamplingParams()
     response = llm.generate(spotify_prompt + "\n\n" + result["text"], sampling_params=sampling_params)
     request_output = response[0]
     generated_text = request_output.outputs[0].text
+    with open("/home/vapa/projects/iskra/data/.txt", "w") as file:
+        file.write(generated_text)
     response = requests.post(REMOTE_URL, json={"text": generated_text})
     
     return JSONResponse(content={"message": f"Audio file {filename} received and processed by LLM"}, status_code=200)
