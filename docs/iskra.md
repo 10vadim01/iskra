@@ -86,9 +86,15 @@ Download model:
 cd whisper.cpp
 sh ./models/download-ggml-model.sh small.en
 ```
+Install ccache and libsdl2-dev:
+```sh   
+sudo apt-get install libsdl2-dev
+sudo apt install -y ccache
+sudo /usr/sbin/update-ccache-symlinks
+echo 'export PATH="/usr/lib/ccache:$PATH"' | tee -a ~/.zshrc
+```
 Build:
 ```sh
-make main
 make stream
 ```
 Run stream:
