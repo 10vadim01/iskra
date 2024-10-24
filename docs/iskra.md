@@ -31,7 +31,7 @@ pip install -r iskra/requirements.txt
 ```
 Install package in editable mode:
 ```sh
-pip install -e iskra
+pip install -e .
 ```
 Run some module:
 ```sh
@@ -86,11 +86,30 @@ Download model:
 cd whisper.cpp
 sh ./models/download-ggml-model.sh small.en
 ```
+Install ccache and libsdl2-dev:
+```sh   
+sudo apt-get install libsdl2-dev
+sudo apt install -y ccache
+sudo /usr/sbin/update-ccache-symlinks
+echo 'export PATH="/usr/lib/ccache:$PATH"' | tee -a ~/.zshrc
+```
 Build:
 ```sh
 make main
 make stream
+make bench
 ```
+Test:
+```sh
+arecord -d 5 -r 16000 -c 1 -f S16_LE test.wav
+./main -m models/ggml-small.en.bin -f test.wav
+```
+Get benchmark for streaming:
+```sh
+./bench -m models/ggml-tiny.en.bin
+```
+About whisper.cpp streaming (https://github.com/ggerganov/whisper.cpp/issues/89)
+
 Run stream:
 ```sh
 ./stream -m models/ggml-small.en.bin --capture 1
