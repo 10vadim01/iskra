@@ -3,7 +3,7 @@ import logging
 import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
-from iskra.modules.spotify import play_track, stop_track, play_next_track, play_previous_track
+from client.modules.spotify import play_track, stop_track, play_next_track, play_previous_track
 import aiohttp
 import re
 
