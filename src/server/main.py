@@ -1,7 +1,6 @@
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
-from vllm import LLM, SamplingParams
 import requests
 import torch
 import os

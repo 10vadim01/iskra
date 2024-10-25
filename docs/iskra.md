@@ -95,6 +95,7 @@ echo 'export PATH="/usr/lib/ccache:$PATH"' | tee -a ~/.zshrc
 ```
 Build:
 ```sh
+make main
 make stream
 make bench
 ```
