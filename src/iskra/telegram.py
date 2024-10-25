@@ -3,7 +3,7 @@ import logging
 import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
-from iskra.modules.spotify import play_track, continue_track, stop_track, play_next_track, play_previous_track
+from iskra.modules.spotify import play_track, stop_track, play_next_track, play_previous_track
 import aiohttp
 import re
 
@@ -16,7 +16,6 @@ dp = Dispatcher()
 
 spotify_functions = {
     "play_track": play_track,
-    "continue_track": continue_track,
     "stop_track": stop_track,
     "play_next_track": play_next_track,
     "play_previous_track": play_previous_track
@@ -74,7 +73,7 @@ async def handle_user_message(message: types.Message):
     await message.answer(response.strip())
 
 async def send_to_llm(question: str) -> str:
-    url = "http://192.168.0.167:8000/v1/chat/completions"
+    url = "http://192.168.0.161:3000/v1/chat/completions"
     headers = {"Content-Type": "application/json"}
     data = {
         "model": "/home/vapa/projects/iskra/models/llms/qwen2.5-7b-instruct",

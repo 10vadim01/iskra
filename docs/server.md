@@ -36,3 +36,37 @@ Install poetry dependencies:
 ```sh
 poetry install
 ```
+
+
+WSL2 setup:
+Setup proxy and firewall rules on Windows and WSL2 for some service on port 2000:
+```sh
+netsh interface portproxy delete v4tov4 listenport=2000 listenaddress=192.168.0.161 (If there were any rules that broke connection)
+netsh interface portproxy add v4tov4 listenport=2000 listenaddress=192.168.0.161 connectport=2000 connectaddress=172.28.15.200
+```
+Setup firewall rules for vLLM on port 2000:
+```sh
+$wslAddress = "172.28.15.200"
+
+New-NetFirewallRule -DisplayName "vLLM" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 2000 -RemoteAddress Any
+New-NetFirewallRule -DisplayName "vLLM Outbound" -Direction Outbound -Action Allow -Protocol TCP -RemotePort 2000 -RemoteAddress $wslAddress
+```
+Check proxies:
+```sh
+netsh interface portproxy show all
+```
+You should see something like this:
+```
+Listen on ipv4:             Connect to ipv4:
+Address         Port        Address         Port
+--------------- ----------  --------------- ----------
+192.168.0.161   2000       172.28.15.200   2000
+```
+Allow connection in WSL2:
+```sh
+sudo ufw allow 2000
+``` 
+Test on Windows:
+```sh
+Test-NetConnection -ComputerName 172.28.15.200 -Port 2000
+```
