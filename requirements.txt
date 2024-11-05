@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-aiogram
-spotipy
-vllm
-soundfile
-pyaudio  
