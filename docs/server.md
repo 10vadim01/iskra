@@ -89,14 +89,8 @@ wget https://huggingface.co/coqui/tts-models/resolve/main/tts_models--multilingu
 unzip model.tar.gz
 ```
 
-Run Jenny model with docker:
+Run Jenny model inside of docker:
 ```sh
 python3 /root/TTS/server/server.py --model_path="/models/tts_models--en--jenny--jenny/model.pth" --co
 nfig_path="/models/tts_models--en--jenny--jenny/config.json" --use_cuda true --port 5002 
-```
-
-Run TTS inside container:
-```sh
-tts --model_path "/models/xtts-v2"     --config_path "/models/xtts-v2/config.json"     --text "Hello,
- world you freak man sand"     --speaker_wav "/models/xtts-v2/test.wav"     --language_idx en     --use_cuda true     --out_path "/data/tts/responses/output.wav"/models/xtts-v2"     --config_path "/models/xtts-v2
 ```
