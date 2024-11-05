@@ -17,6 +17,7 @@ async def play_previous_track() -> str:
     return "Message from Spotify: Playing previous track"
 
 async def search_and_play_track(track_name: str) -> str:
+    print(f"Searching for: {track_name}")
     try:
         results = sp.search(q=f'track:{track_name}', type='track', limit=1)
         tracks = results['tracks']['items']

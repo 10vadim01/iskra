@@ -1,4 +1,4 @@
-from fastapi import FastAPI, BackgroundTasks, Request, HTTPException
+from fastapi import FastAPI, BackgroundTasks, Request, HTTPException, File, UploadFile
 from client.modules.spotify import search_and_play_track, stop_track, play_next_track, play_previous_track
 from pvrecorder import PvRecorder
 from threading import Thread
@@ -10,13 +10,14 @@ import os
 import wave
 import webrtcvad
 import time
+import subprocess
 
 app = FastAPI()
 
 REMOTE_URL = "http://192.168.0.161:3000/receive_audio"
 
 PORCUPINE_ACCESS_KEY = os.getenv("ACCESS_KEY")
-KEYWORD = "jarvis"
+KEYWORD = "computer"
 
 vad = webrtcvad.Vad(3)
 FRAME_LENGTH = 480
@@ -128,32 +129,44 @@ async def record_audio(background_tasks: BackgroundTasks):
 @app.post("/play_song")
 async def play_song(request: Request):
     data = await request.json()
-    command = data.get("text", "").lower()
+    command = data.get("text", "").lower().strip()
     print(f"Spotify command: {command}")
     os.system("amixer -D pulse sset Master 30%")
     
-    spotify_commands = {
-        "stop": stop_track,
-        "next": play_next_track,
-        "previous": play_previous_track,
-        "play": search_and_play_track
-    }
+    if command in ["<sp_stop>", "<sp_next>", "<sp_previous>"]:
+        command_map = {
+            "<sp_stop>": stop_track,
+            "<sp_next>": play_next_track,
+            "<sp_previous>": play_previous_track
+        }
+        return await command_map[command]()
     
-    parts = command.split(maxsplit=1)
-    action = parts[0]
-    query = parts[1] if len(parts) > 1 else ""
+    if command.startswith("<sp_song>"):
+        query = command[8:].strip()
+        print(f"Searching for: {query}")
+        return await search_and_play_track(query)
     
-    command_function = spotify_commands.get(action)
-    if command_function:
-        if action == "play":
-            return await command_function(query)
-        return await command_function()
-        
     return await search_and_play_track(command)
 
 @app.get("/")
 async def root():
     return {"message": "Audio sender is ready"}
+
+@app.post("/talk")
+async def play_audio(audio: UploadFile = File(...)):
+    try:
+        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as temp_audio:
+            temp_audio.write(await audio.read())
+            temp_audio.flush()
+            stop_track()
+            
+            os.system("amixer -D pulse sset Master 30%")
+            subprocess.run(['aplay', temp_audio.name], check=True)
+            os.unlink(temp_audio.name)
+            
+        return {"message": "Audio played successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error playing audio: {str(e)}")
 
 if __name__ == "__main__":
     wake_thread = Thread(target=wake_word_listener, daemon=True)
