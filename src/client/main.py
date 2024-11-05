@@ -3,14 +3,12 @@ from client.modules.spotify import search_and_play_track, stop_track, play_next_
 from pvrecorder import PvRecorder
 from threading import Thread
 import pvporcupine
-import requests
-import tempfile
-import uvicorn
-import os
+
 import wave
 import webrtcvad
 import time
 import subprocess
+
 
 app = FastAPI()
 
@@ -18,6 +16,7 @@ REMOTE_URL = "http://192.168.0.161:3000/receive_audio"
 
 PORCUPINE_ACCESS_KEY = os.getenv("ACCESS_KEY")
 KEYWORD = "computer"
+
 
 vad = webrtcvad.Vad(3)
 FRAME_LENGTH = 480
@@ -41,6 +40,7 @@ def wake_word_listener():
                 pcm = recorder.read()
                 result = porcupine.process(pcm)
                 if result >= 0:
+
                     os.system("amixer -D pulse sset Master 0%")
                     requests.post("http://localhost:6996/record")
                     # record_and_send()
@@ -148,6 +148,7 @@ async def play_song(request: Request):
     
     return await search_and_play_track(command)
 
+
 @app.get("/")
 async def root():
     return {"message": "Audio sender is ready"}
@@ -167,6 +168,7 @@ async def play_audio(audio: UploadFile = File(...)):
         return {"message": "Audio played successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error playing audio: {str(e)}")
+
 
 if __name__ == "__main__":
     wake_thread = Thread(target=wake_word_listener, daemon=True)
