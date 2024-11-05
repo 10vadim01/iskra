@@ -1,5 +1,5 @@
 from fastapi import FastAPI, BackgroundTasks, Request, HTTPException
-from iskra.modules.spotify import search_and_play_track
+from client.modules.spotify import search_and_play_track
 from pvrecorder import PvRecorder
 from threading import Thread
 import pvporcupine
@@ -34,7 +34,6 @@ def wake_word_listener():
                 result = porcupine.process(pcm)
                 if result >= 0:
                     print("Wake word detected!")
-                    # Make HTTP request to our own /record endpoint
                     requests.post("http://localhost:6996/record")
                     
         except Exception as e:
@@ -96,9 +95,7 @@ async def root():
     return {"message": "Audio sender is ready"}
 
 if __name__ == "__main__":
-    # Start wake word listener in a separate thread
     wake_thread = Thread(target=wake_word_listener, daemon=True)
     wake_thread.start()
     
-    # Run the FastAPI server
     uvicorn.run(app, host="0.0.0.0", port=6996)

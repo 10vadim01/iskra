@@ -70,3 +70,33 @@ Test on Windows:
 ```sh
 Test-NetConnection -ComputerName 172.28.15.200 -Port 2000
 ```
+
+TTS:
+Run TTS container:
+```sh
+sudo docker run --rm -it \
+  -p 5002:5002 \
+  --gpus all \
+  -v /home/vapa/projects/iskra/data:/data \
+  -v /home/vapa/projects/iskra/models/tts:/models \
+  --entrypoint /bin/bash \
+  ghcr.io/coqui-ai/tts
+```
+
+Download model:
+```sh
+wget https://huggingface.co/coqui/tts-models/resolve/main/tts_models--multilingual--multilingual-en--large-v2/model.tar.gz
+unzip model.tar.gz
+```
+
+Run Jenny model with docker:
+```sh
+python3 /root/TTS/server/server.py --model_path="/models/tts_models--en--jenny--jenny/model.pth" --co
+nfig_path="/models/tts_models--en--jenny--jenny/config.json" --use_cuda true --port 5002 
+```
+
+Run TTS inside container:
+```sh
+tts --model_path "/models/xtts-v2"     --config_path "/models/xtts-v2/config.json"     --text "Hello,
+ world you freak man sand"     --speaker_wav "/models/xtts-v2/test.wav"     --language_idx en     --use_cuda true     --out_path "/data/tts/responses/output.wav"/models/xtts-v2"     --config_path "/models/xtts-v2
+```
