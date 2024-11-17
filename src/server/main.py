@@ -7,7 +7,6 @@ import os
 
 REMOTE_URL = "http://192.168.0.188:6996/"
 
-# Load ASR model
 device = "cuda:0"
 
 asr_model_id = "/home/vapa/projects/iskra/models/asr/whisper-large-v3"
@@ -27,7 +26,6 @@ pipe = pipeline(
     device=device,
 )
 
-# FastAPI app
 app = FastAPI()
 
 UPLOAD_DIR = "/home/vapa/projects/iskra/data/recordings"
@@ -50,10 +48,10 @@ async def receive_audio(audio: UploadFile = File(...)):
         file.write(result["text"])
     
     payload = {
-        "model": "/home/vapa/projects/iskra/models/llms/iskra-8b-sp",
+        "model": "/home/vapa/projects/iskra/models/llms/vikhr-12b",
         "messages": [
             {"role": "system", "content": "You are a helpful assistant iskra, help users by answering their questions and entertaining them."},
-            {"role": "user", "content": result["text"]}
+            {"role": "user", "content": result["text"]} 
         ]
     }
     
@@ -68,17 +66,21 @@ async def receive_audio(audio: UploadFile = File(...)):
     
     if is_special_command:
         response = requests.post(f"{REMOTE_URL}/play_song", json={"text": generated_text})
+    
     else:
-        url = "http://localhost:5002/api/tts"
-        headers = {"text": generated_text}
-        response = requests.post(url, headers=headers)
-
-        with open("/home/vapa/projects/iskra/data/tts/responses/output.wav", "wb") as f:
-            f.write(response.content)
+        response = requests.post(f"{REMOTE_URL}/talk", json={"text": generated_text})
         
-        with open("/home/vapa/projects/iskra/data/tts/responses/output.wav", "rb") as f:
-            files = {"audio": f}
-            response = requests.post(f"{REMOTE_URL}/talk", files=files)
+    # else:
+    #     url = "http://localhost:5002/api/tts"
+    #     headers = {"text": generated_text}
+    #     response = requests.post(url, headers=headers)
+
+    #     with open("/home/vapa/projects/iskra/data/tts/responses/output.wav", "wb") as f:
+    #         f.write(response.content)
+        
+    #     with open("/home/vapa/projects/iskra/data/tts/responses/output.wav", "rb") as f:
+    #         files = {"audio": f}
+    #         response = requests.post(f"{REMOTE_URL}/talk", files=files)
     
     return JSONResponse(content={"message": f"Audio file {filename} received and processed by LLM"}, status_code=200)
 
