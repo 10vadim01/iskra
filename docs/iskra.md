@@ -75,70 +75,30 @@ Play recording:
 aplay test.wav
 ```
 
-## Setup audio stream to server with whiper.cpp
-
-Clone repository:
-```sh
-git clone https://github.com/ggerganov/whisper.cpp.git
-```
-Download model:
+## Whisper server
 ```sh
 cd whisper.cpp
-sh ./models/download-ggml-model.sh small.en
+make server
 ```
-Install ccache and libsdl2-dev:
-```sh   
-sudo apt-get install libsdl2-dev
-sudo apt install -y ccache
-sudo /usr/sbin/update-ccache-symlinks
-echo 'export PATH="/usr/lib/ccache:$PATH"' | tee -a ~/.zshrc
-```
-Build:
 ```sh
-make main
-make stream
-make bench
+./server -m models/ggml-base.en.bin
 ```
-Test:
-```sh
-arecord -d 5 -r 16000 -c 1 -f S16_LE test.wav
-./main -m models/ggml-small.en.bin -f test.wav
-```
-Get benchmark for streaming:
-```sh
-./bench -m models/ggml-tiny.en.bin
-```
-About whisper.cpp streaming (https://github.com/ggerganov/whisper.cpp/issues/89)
 
-Run stream:
-```sh
-./stream -m models/ggml-small.en.bin --capture 1
-```
 ## Add-ons 
 
 ### Spotify Player
-Install rustup:
+Use librespot to connect to spotify.
+https://github.com/librespot-org/librespot/wiki/Options
+
+install librespot
 ```sh
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+cargo install librespot
 ```
-Install required dependencies:
+
+run librespot
 ```sh
-sudo apt install libasound2-dev libssl-dev pkg-config build-essential
+librespot -n "iskra" -c .cache --device-type speaker --enable-oauth --oauth-port 0 
 ```
-Clone repository:
-```sh
-git clone https://github.com/Spotifyd/spotifyd.git
-```
-Build spotifyd:
-```sh
-cd spotifyd
-cargo build --release
-```
-Run spotifyd:
-```sh
-./target/release/spotifyd --no-daemon
-```
-Find iskra in Spotify client on another device and connect to it.
 
 ### ExpressVPN 
 (https://gist.github.com/martinbutt/a514621664dc17fcbd20d78f647bd14b)
