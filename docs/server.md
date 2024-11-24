@@ -89,8 +89,39 @@ wget https://huggingface.co/coqui/tts-models/resolve/main/tts_models--multilingu
 unzip model.tar.gz
 ```
 
+Run docker:
+```sh
+sudo docker run --rm -it \
+  -p 5002:5002 \
+  --gpus all \
+  -v /home/vapa/Storage/:/data \
+  -v /home/vapa/Storage/tts:/models \
+  --entrypoint /bin/bash \
+  ghcr.io/coqui-ai/tts
+```
+
 Run Jenny model inside of docker:
 ```sh
-python3 /root/TTS/server/server.py --model_path="/models/tts_models--en--jenny--jenny/model.pth" --co
-nfig_path="/models/tts_models--en--jenny--jenny/config.json" --use_cuda true --port 5002 
+python3 /root/TTS/server/server.py --model_path="/models/jenny/model.pth" --config_path="/models/jenny/config.json" --use_cuda true --port 5002 
+```
+
+Example of request:
+```python
+import requests
+import tempfile
+import subprocess
+
+url = "http://192.168.0.161:5002/api/tts"
+params = {"text": "Hello, this is a test"}
+
+response = requests.post(url, params=params)
+
+if response.status_code == 200:
+    with tempfile.NamedTemporaryFile(suffix='.wav', delete=True) as temp_audio:
+        temp_audio.write(response.content)
+        temp_audio.flush()
+        subprocess.run(['aplay', temp_audio.name], check=True)
+else:
+    print(f"Error: {response.status_code}")
+    print(response.text)
 ```
