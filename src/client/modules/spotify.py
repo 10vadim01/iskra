@@ -1,5 +1,7 @@
+
 from spotipy.oauth2 import SpotifyOAuth
 import spotipy
+
 
 scope = "user-read-playback-state,user-modify-playback-state"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
@@ -34,7 +36,9 @@ async def play_previous_track() -> str:
     return "Message from Spotify: Librespot device not found"
 
 async def search_and_play_track(track_name: str) -> str:
+
     print(f"Searching for: {track_name}")
+
     try:
         device_id = await get_librespot_device()
         if not device_id:

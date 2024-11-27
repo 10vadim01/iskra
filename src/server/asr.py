@@ -5,13 +5,8 @@ import requests
 import torch
 import os
 
-REMOTE_URL = "http://192.168.0.188:6996/play_song"
+REMOTE_URL = "http://192.168.0.188:6996/"
 
-spotify_prompt = """
-You have access to a Spotify player. If a user asks you to play some music, respond only with the name of the song you were asked to play.
-"""
-
-# Load ASR model
 device = "cuda:0"
 
 asr_model_id = "/home/vapa/projects/iskra/models/asr/whisper-large-v3"
@@ -31,7 +26,6 @@ pipe = pipeline(
     device=device,
 )
 
-# FastAPI app
 app = FastAPI()
 
 UPLOAD_DIR = "/home/vapa/projects/iskra/data/recordings"
@@ -54,19 +48,39 @@ async def receive_audio(audio: UploadFile = File(...)):
         file.write(result["text"])
     
     payload = {
-        "model": "/home/vapa/projects/iskra/models/llms/qwen2.5-7b-instruct",
+        "model": "/home/vapa/projects/iskra/models/llms/vikhr-12b",
         "messages": [
-            {"role": "system", "content": spotify_prompt},
-            {"role": "user", "content": result["text"]}
+            {"role": "system", "content": "You are a helpful assistant iskra, help users by answering their questions and entertaining them."},
+            {"role": "user", "content": result["text"]} 
         ]
     }
     
     response = requests.post("http://0.0.0.0:8000/v1/chat/completions", json=payload)
     generated_text = response.json()["choices"][0]["message"]["content"]
     
+    special_commands = ["<sp_song>", "<sp_stop>", "<sp_next>", "<sp_continue>", "<sp_previous>"]
+    is_special_command = any(cmd in generated_text for cmd in special_commands)
+    
     with open("/home/vapa/projects/iskra/data/llms/play/response.txt", "w") as file:
         file.write(generated_text)
-    response = requests.post(REMOTE_URL, json={"text": generated_text})
+    
+    if is_special_command:
+        response = requests.post(f"{REMOTE_URL}/play_song", json={"text": generated_text})
+    
+    else:
+        response = requests.post(f"{REMOTE_URL}/talk", json={"text": generated_text})
+        
+    # else:
+    #     url = "http://localhost:5002/api/tts"
+    #     headers = {"text": generated_text}
+    #     response = requests.post(url, headers=headers)
+
+    #     with open("/home/vapa/projects/iskra/data/tts/responses/output.wav", "wb") as f:
+    #         f.write(response.content)
+        
+    #     with open("/home/vapa/projects/iskra/data/tts/responses/output.wav", "rb") as f:
+    #         files = {"audio": f}
+    #         response = requests.post(f"{REMOTE_URL}/talk", files=files)
     
     return JSONResponse(content={"message": f"Audio file {filename} received and processed by LLM"}, status_code=200)
 

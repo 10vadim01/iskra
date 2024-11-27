@@ -3,10 +3,7 @@ from client.modules.spotify import search_and_play_track, stop_track, play_next_
 from pvrecorder import PvRecorder
 from threading import Thread
 import pvporcupine
-import requests
-import tempfile
-import uvicorn
-import os
+
 import wave
 import webrtcvad
 import time
@@ -14,12 +11,14 @@ import subprocess
 from pyht import Client
 from pyht.client import TTSOptions, Language
 
+
 app = FastAPI()
 
 REMOTE_URL = "http://192.168.0.161:3000/receive_audio"
 
 PORCUPINE_ACCESS_KEY = os.getenv("ACCESS_KEY")
 KEYWORD = "computer"
+
 
 vad = webrtcvad.Vad(3)
 FRAME_LENGTH = 480
@@ -53,6 +52,7 @@ def wake_word_listener():
                 pcm = recorder.read()
                 result = porcupine.process(pcm)
                 if result >= 0:
+
                     os.system("amixer -D pulse sset Master 0%")
                     requests.post("http://localhost:6996/record")
                     
@@ -224,6 +224,7 @@ async def record_audio(background_tasks: BackgroundTasks):
     background_tasks.add_task(record_and_send)
     return {"message": "Audio recording and sending started"}
     
+
 
 @app.get("/")
 async def root():

@@ -70,3 +70,58 @@ Test on Windows:
 ```sh
 Test-NetConnection -ComputerName 172.28.15.200 -Port 2000
 ```
+
+TTS:
+Run TTS container:
+```sh
+sudo docker run --rm -it \
+  -p 5002:5002 \
+  --gpus all \
+  -v /home/vapa/projects/iskra/data:/data \
+  -v /home/vapa/projects/iskra/models/tts:/models \
+  --entrypoint /bin/bash \
+  ghcr.io/coqui-ai/tts
+```
+
+Download model:
+```sh
+wget https://huggingface.co/coqui/tts-models/resolve/main/tts_models--multilingual--multilingual-en--large-v2/model.tar.gz
+unzip model.tar.gz
+```
+
+Run docker:
+```sh
+sudo docker run --rm -it \
+  -p 5002:5002 \
+  --gpus all \
+  -v /home/vapa/Storage/:/data \
+  -v /home/vapa/Storage/tts:/models \
+  --entrypoint /bin/bash \
+  ghcr.io/coqui-ai/tts
+```
+
+Run Jenny model inside of docker:
+```sh
+python3 /root/TTS/server/server.py --model_path="/models/jenny/model.pth" --config_path="/models/jenny/config.json" --use_cuda true --port 5002 
+```
+
+Example of request:
+```python
+import requests
+import tempfile
+import subprocess
+
+url = "http://192.168.0.161:5002/api/tts"
+params = {"text": "Hello, this is a test"}
+
+response = requests.post(url, params=params)
+
+if response.status_code == 200:
+    with tempfile.NamedTemporaryFile(suffix='.wav', delete=True) as temp_audio:
+        temp_audio.write(response.content)
+        temp_audio.flush()
+        subprocess.run(['aplay', temp_audio.name], check=True)
+else:
+    print(f"Error: {response.status_code}")
+    print(response.text)
+```
