@@ -13,11 +13,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-TTS_HOST = "http://192.168.0.161:5002"
+TTS_HOST = "http://0.0.0.0:5000"
 logger.info(f"Using TTS server at: {TTS_HOST}")
 
-model_size = "large-v3"
-model = WhisperModel(model_size, device="cuda", compute_type="float16")
+model_size = "base"
+model = WhisperModel(model_size, device="cpu", compute_type="int8")
 batched_model = BatchedInferencePipeline(model=model)
 
 

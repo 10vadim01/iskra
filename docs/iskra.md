@@ -100,47 +100,49 @@ run librespot
 librespot -n "iskra" -c .cache --device-type speaker --enable-oauth --oauth-port 0 
 ```
 
-### ExpressVPN 
-(https://gist.github.com/martinbutt/a514621664dc17fcbd20d78f647bd14b)
+TTS:
 
-Add armhf architecture (ExpressVPN is not available for arm64):
+Download model:
 ```sh
-sudo dpkg --add-architecture armhf
-sudo apt-get update
+wget https://huggingface.co/coqui/tts-models/resolve/main/tts_models--multilingual--multilingual-en--large-v2/model.tar.gz
+unzip model.tar.gz
 ```
-Install dependencies:
+
+Run docker:
 ```sh
-sudo apt install libc6:armhf
+sudo docker run --rm -it \
+  -p 5000:5000 \
+  --network host \
+  --gpus all \
+  -v /home/vapa/Storage/:/data \
+  -v /home/vapa/Storage/tts:/models \
+  --entrypoint /bin/bash \
+  ghcr.io/coqui-ai/tts
 ```
-Install the cross compatibility libraries:
+
+Run Jenny model inside of docker:
 ```sh
-sudo apt-get install libc6-armhf-cross libstdc++6-armhf-cross patchelf
+python3 /root/TTS/server/server.py --model_path="/models/jenny/model.pth" --config_path="/models/jenny/config.json" --use_cuda true --port 5000 
 ```
-Link the interpreters to the expected locations:
-```sh
-sudo ln -s /usr/arm-linux-gnueabihf/lib/ld-linux-armhf.so.3  /lib/ld-linux-armhf.so.3
-sudo ln -s /usr/arm-linux-gnueabihf/lib/ /lib/arm-linux-gnueabihf
+
+Example of request:
+```python
+import requests
+import tempfile
+import subprocess
+
+url = "http://192.168.0.161:5002/api/tts"
+params = {"text": "Hello, this is a test"}
+
+response = requests.post(url, params=params)
+
+if response.status_code == 200:
+    with tempfile.NamedTemporaryFile(suffix='.wav', delete=True) as temp_audio:
+        temp_audio.write(response.content)
+        temp_audio.flush()
+        subprocess.run(['aplay', temp_audio.name], check=True)
+else:
+    print(f"Error: {response.status_code}")
+    print(response.text)
 ```
-Get the lastest version of the armhf (32-bit) package (labelled as Raspbian):
-```sh
-wget https://www.expressvpn.works/clients/linux/expressvpn_3.20.0.5-1_armhf.deb
-```
-Install as usual:
-```sh
-sudo dpkg -i expressvpn_3.20.0.5-1_armhf.deb
-```
-Patch the binaries to point to the armhf (32-bit) interpreter:
-```sh
-sudo patchelf --set-interpreter /lib/ld-linux-armhf.so.3 /usr/bin/expressvpn
-sudo patchelf --set-interpreter /lib/ld-linux-armhf.so.3 /usr/bin/expressvpn-browser-helper
-```
-If error, try:
-```sh
-sudo apt --fix-broken install    
-```
-Start and activate the service:
-```sh
-sudo service expressvpn restart
-expressvpn activate
-expressvpn connect "Germany"
-```
+
