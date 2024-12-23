@@ -11,7 +11,6 @@
 - [X] Implement Basic Agent with ASR, TTS and Spotify Player
 - [X] Apply streaming optimizations to ASR, LLM and TTS to reduce latency
 - [ ] Implement stop words and background query for stopping model responses
-- [ ] Retrain the LLM to adapt to new script like user data and create in-context activation
 - [ ] Implement basic conversation history
 - [ ] Implement advanced conversation history with caching and SQL/NoSQL database
 
@@ -22,3 +21,14 @@
 - [X] Setup queues, stop, pause, resume, skip functionality
 - [ ] Improve recommendation queues as a user asks to play specific music
 - [ ] Add function to save, delete and play user favorite songs
+
+
+## LLM Tuning
+- [X] CoT dataset
+- [X] Conversational dataset
+- [X] Writing dataset
+- [X] Code dataset
+- [X] Math dataset
+- [ ] Train search classifier
+- [ ] Convert conversational to search dataset
+- [ ] Multispeaker dataset (maybe convert instruct to multispeaker)

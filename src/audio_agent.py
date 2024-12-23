@@ -37,7 +37,7 @@ class AudioAgent:
     def _save_audio_to_temp(self, audio_data):
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
             temp_audio.write(audio_data.get_wav_data())
-            logger.info(f"Audio saved to temporary file: {temp_audio.name}")
+            # logger.info(f"Audio saved to temporary file: {temp_audio.name}")
             return temp_audio.name
 
     def _transcribe_audio(self, audio_path):
@@ -162,7 +162,7 @@ class AudioAgent:
             
             while True:
                 try:
-                    logger.info("Listening for speech...")
+                    # logger.info("Listening for speech...")
                     audio = self.recognizer.listen(source)
                     temp_audio_path = self._save_audio_to_temp(audio)
 
@@ -179,7 +179,7 @@ class AudioAgent:
                     except Exception as e:
                         logger.error(f"Error during transcription or processing: {e}")
                     finally:
-                        logger.info(f"Cleaning up temporary file: {temp_audio_path}")
+                        # logger.info(f"Cleaning up temporary file: {temp_audio_path}")
                         os.unlink(temp_audio_path)
                     
                 except sr.UnknownValueError:
