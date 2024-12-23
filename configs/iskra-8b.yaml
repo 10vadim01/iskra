@@ -1,5 +1,14 @@
 LLM:
   description: Basic iskra model for testing
   model_name: iskra-8b
-  model_path: /home/vapa/projects/iskra/models/llms/iskra-8b
+  model_path: /home/vapa/Storage/llms/iskra-7b-player
   system_prompt: You have access to a Spotify player. If a user asks you to play some music, respond only with the name of the song you were asked to play.
+  host: http://192.168.0.162:8000
+
+TTS:
+  host: http://192.168.0.162:5000
+
+ASR:
+  model: base
+  device: cpu
+  compute_type: int8

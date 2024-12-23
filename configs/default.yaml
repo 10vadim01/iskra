@@ -3,3 +3,12 @@ LLM:
   model_name: model_name
   model_path: /path/to/model
   system_prompt: system_prompt
+  host: http://127.0.0.1:8000
+
+TTS:
+  host: http://127.0.0.1:5000
+
+ASR:
+  model: base
+  device: cpu
+  compute_type: int8

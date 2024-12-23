@@ -75,15 +75,6 @@ Play recording:
 aplay test.wav
 ```
 
-## Whisper server
-```sh
-cd whisper.cpp
-make server
-```
-```sh
-./server -m models/ggml-base.en.bin
-```
-
 ## Add-ons 
 
 ### Spotify Player

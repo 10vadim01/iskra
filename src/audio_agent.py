@@ -15,11 +15,13 @@ logger = logging.getLogger(__name__)
 
 
 class AudioAgent:
-    def __init__(self):
-        self.tts_host = "http://127.0.0.1:5000" 
-        self.llm_host = "http://127.0.0.1:8000"
-        self.llm_model = "/home/vapa/Storage/llms/iskra-7b-player"
-        self.whisper_model = WhisperModel("base", device="cpu", compute_type="int8")
+    def __init__(self, llm_host, llm_model, system_prompt, tts_host, 
+                 asr_model="base", asr_device="cpu", asr_compute_type="int8"):
+        self.tts_host = tts_host
+        self.llm_host = llm_host
+        self.llm_model = llm_model
+        self.system_prompt = system_prompt
+        self.whisper_model = WhisperModel(asr_model, device=asr_device, compute_type=asr_compute_type)
         self.batched_model = BatchedInferencePipeline(model=self.whisper_model)
         self.recognizer = self._setup_recognizer()
         self._test_connections()
@@ -30,14 +32,12 @@ class AudioAgent:
         return recognizer
 
     def _setup_microphone(self, source):
-        logger.info("Adjusting for ambient noise...")
         self.recognizer.adjust_for_ambient_noise(source, duration=2)
         logger.info("Ready to listen!")
 
     def _save_audio_to_temp(self, audio_data):
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
             temp_audio.write(audio_data.get_wav_data())
-            # logger.info(f"Audio saved to temporary file: {temp_audio.name}")
             return temp_audio.name
 
     def _transcribe_audio(self, audio_path):
@@ -48,7 +48,7 @@ class AudioAgent:
         return {
             "model": self.llm_model,
             "messages": [
-                {"role": "system", "content": "You are a helpful assistant iskra, help users by answering their questions and entertaining them."},
+                {"role": "system", "content": self.system_prompt},
                 {"role": "user", "content": text}
             ],
             "stream": True
@@ -162,16 +162,13 @@ class AudioAgent:
             
             while True:
                 try:
-                    # logger.info("Listening for speech...")
                     audio = self.recognizer.listen(source)
                     temp_audio_path = self._save_audio_to_temp(audio)
 
                     try:
                         segments = self._transcribe_audio(temp_audio_path)
                         for segment in segments:
-                            logger.info(f"Transcribed text: {segment.text}")
-                            
-                            logger.info("Sending request to LLM...")
+                            logger.info(f"Transcribed text: {segment.text}\nSending to LLM")
                             payload = self._create_llm_payload(segment.text)
                             response = requests.post(f"{self.llm_host}/v1/chat/completions", json=payload, stream=True)
                             self._process_llm_response(response)
@@ -179,7 +176,6 @@ class AudioAgent:
                     except Exception as e:
                         logger.error(f"Error during transcription or processing: {e}")
                     finally:
-                        # logger.info(f"Cleaning up temporary file: {temp_audio_path}")
                         os.unlink(temp_audio_path)
                     
                 except sr.UnknownValueError:
@@ -189,10 +185,3 @@ class AudioAgent:
                     break
                 except Exception as e:
                     logger.error(f"Unexpected error: {e}")
-
-def main():
-    processor = AudioAgent()
-    processor.process_audio_stream()
-
-if __name__ == "__main__":
-    main()

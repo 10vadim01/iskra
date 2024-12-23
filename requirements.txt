@@ -1,5 +1,7 @@
-fastapi
-uvicorn
-aiogram
-spotipy
-jupyter
+aiogram==3.16.0
+aiohttp==3.10.10
+faster_whisper==1.1.0
+PyYAML==6.0.2
+Requests==2.32.3
+SpeechRecognition==3.10.4
+spotipy==2.24.0
